@@ -61,8 +61,14 @@ img[marker == -1] = (0, 0, 255)
 #Displaying and saving results
 cv2.imshow('watershed', img)
 cv2.imwrite('results/WatershedSegmentation.jpg', img)
-marker_img = Image.fromarray(marker, 'RGB')
-marker_img.save('results/WatershedSegmentationMarker.png')
+# a colormap and a normalization instance for saving marker
+cmap = plt.cm.jet
+norm = plt.Normalize(vmin=marker.min(), vmax=marker.max())
+# map the normalized data to colors
+# image is now RGBA (512x512x4)
+marker_img = cmap(norm(marker))
+# save the marker of segmentation
+plt.imsave('results/WatershedSegmentationMarker.png', marker_img)
 imgplt = plt.imshow(marker)
 plt.colorbar()
 plt.show()
