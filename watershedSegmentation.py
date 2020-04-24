@@ -1,9 +1,10 @@
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+from PIL import Image
 
 # Reading the image
-img = cv2.imread('15004.jpg')
+img = cv2.imread('images/bird.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Conversion to gray scale
 ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)  # thresholding
 
@@ -57,11 +58,18 @@ cv2.watershed(img, marker)
 
 img[marker == -1] = (0, 0, 255)
 
+#Displaying and saving results
 cv2.imshow('watershed', img)
-cv2.imwrite('img.jpg', img)
+cv2.imwrite('results/WatershedSegmentation.jpg', img)
+marker_img = Image.fromarray(marker, 'RGB')
+marker_img.save('results/WatershedSegmentationMarker.png')
 imgplt = plt.imshow(marker)
 plt.colorbar()
 plt.show()
+
+
+
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
