@@ -56,7 +56,7 @@ def get_segmented_image(img_name):
 
 
 def main():
-    img1, img2 = get_segmented_image("train/24004.jpg")
+    img1, img2 = get_segmented_image("train/71046.jpg")
     cv2.imshow('1', img1)
     cv2.imshow('2', img2)
     cv2.waitKey(0)
