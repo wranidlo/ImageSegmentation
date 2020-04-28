@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 # Reading the image
-img = cv2.imread('images/bird.jpg')
+img = cv2.imread('test/3096.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Conversion to gray scale
 ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)  # thresholding
 
