@@ -8,8 +8,8 @@ from sklearn import cluster
 def get_edges_transformed(img):
     edges = cv2.Canny(img, 100, 200)
     kernel = np.ones((5, 5), np.uint8)
-    edges = cv2.dilate(edges, kernel, iterations=3)
-    edges = cv2.erode(edges, kernel, iterations=3)
+    edges = cv2.dilate(edges, kernel, iterations=1)
+    edges = cv2.erode(edges, kernel, iterations=1)
     return edges
 
 
@@ -25,7 +25,7 @@ def get_edges_value(edges):
 
 def learn():
     image_list = []
-    for filename in glob.glob('train/*.jpg'):
+    for filename in glob.glob('images/train/*.jpg'):
         img = cv2.imread(filename)
         img_edges_transformed = get_edges_transformed(img)
         img_edges = get_edges(img)
@@ -39,12 +39,16 @@ def learn():
 
 def main():
     model = learn()
+    test_names = ["images/test/3096.jpg", "images/test/8023.jpg", "images/test/12084.jpg", "images/test/14037.jpg",
+                  "images/test/16077.jpg"]
+    test_list = []
+    for e in test_names:
+        im = cv2.imread(e)
+        edges = get_edges_transformed(im)
+        edges_transformed = get_edges_transformed(im)
+        test_list.append([get_edges_value(edges_transformed), get_edges_value(edges)])
 
-    im = cv2.imread("train/2092.jpg")  # images/plane.jpg   train/8049.jpg  train/71046.jpg
-    edges = get_edges_transformed(im)
-    edges_transformed = get_edges_transformed(im)
-
-    print(model.predict([[get_edges_value(edges), get_edges_value(edges_transformed)]]))
+    print(model.predict(test_list))
     # first category is good for edge based segmentation
 
 
