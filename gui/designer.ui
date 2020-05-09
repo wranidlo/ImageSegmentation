@@ -33,6 +33,13 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout">
+          <item row="6" column="2">
+           <widget class="QPushButton" name="delete_button">
+            <property name="text">
+             <string>Usuń</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="2">
            <widget class="QLineEdit" name="folder_text">
             <property name="text">
@@ -42,26 +49,6 @@
              <string>example.jpg</string>
             </property>
            </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="add_one_image_button">
-            <property name="text">
-             <string>Dodaj</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="3" column="1">
            <widget class="QLabel" name="label_2">
@@ -73,45 +60,6 @@
             </property>
             <property name="text">
              <string>Lista obrazów</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="4" column="3">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLabel" name="label_4">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Usuń obraz z listy</string>
             </property>
            </widget>
           </item>
@@ -141,21 +89,15 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Podaj lokalizację obrazu</string>
+          <item row="3" column="2">
+           <widget class="QProgressBar" name="progress_bar_list">
+            <property name="value">
+             <number>0</number>
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="add_folder_button">
+          <item row="2" column="0">
+           <widget class="QPushButton" name="add_one_image_button">
             <property name="text">
              <string>Dodaj</string>
             </property>
@@ -171,11 +113,8 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QListView" name="list_of_images"/>
-          </item>
-          <item row="5" column="0">
-           <spacer name="verticalSpacer_3">
+          <item row="3" column="0">
+           <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -186,6 +125,46 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="add_folder_button">
+            <property name="text">
+             <string>Dodaj</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Wyczyść listę obrazów</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QListView" name="list_of_images">
+            <property name="viewMode">
+             <enum>QListView::ListMode</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Podaj lokalizację obrazu</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_3">
@@ -200,12 +179,28 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="2">
-           <widget class="QPushButton" name="delete_button">
+          <item row="2" column="1">
+           <widget class="QLabel" name="wrong_data_error_label">
             <property name="text">
-             <string>Usuń</string>
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
+          </item>
+          <item row="5" column="0">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -213,7 +208,34 @@
       </widget>
       <widget class="QWidget" name="tab2">
        <attribute name="title">
+        <string>Grupowanie obrazów</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <attribute name="title">
         <string>Segmentacja</string>
+       </attribute>
+       <widget class="QWidget" name="gridLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>691</width>
+          <height>491</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4"/>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Strona</string>
        </attribute>
       </widget>
      </widget>
