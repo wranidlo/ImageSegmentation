@@ -11,14 +11,13 @@ def test_if_not_blurred(img_name):
     image = cv2.imread(img_name)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     fm = laplacian_variance(gray)
-    print(fm)
     if fm < 500.0:
         return False
     return True
 
 
 def main():
-    img_name = "images/blurred.jpg"
+    img_name = "images/test/3096.jpg"
     print(test_if_not_blurred(img_name))
     cv2.imshow('tested_img', cv2.imread(img_name))
     cv2.waitKey(0)
