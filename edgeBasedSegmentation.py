@@ -27,7 +27,7 @@ def get_shape_from_edges(edges):
     im_filled_inv = cv2.bitwise_not(im_filled)
     im_out = edges | im_filled_inv
     im_out = cv2.dilate(im_out, kernel, iterations=3)
-
+    """
     plt.imshow(edges)
     plt.show()
     plt.imshow(im_filled)
@@ -36,8 +36,8 @@ def get_shape_from_edges(edges):
     plt.show()
     plt.imshow(im_out)
     plt.show()
-
-    print(cv2.countNonZero(im_out))
+    """
+    # print(cv2.countNonZero(im_out))
     return im_out
 
 
@@ -50,6 +50,14 @@ def get_segmented_image(img_name):
     segmented_place = np.bitwise_and(img, place[:, :, np.newaxis])
     segmented_edges = np.bitwise_or(img, edges[:, :, np.newaxis])
     return segmented_edges, segmented_place
+
+
+def segment_image(img_name):
+    img = cv2.imread(img_name)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    edges = get_edges(gray)
+    place = get_shape_from_edges(edges)
+    return edges, place
 
 
 def main():

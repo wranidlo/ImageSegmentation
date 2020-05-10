@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidget
 
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
-
+import edgeBasedSegmentation
 sys.path.append('../')
 
 
@@ -41,6 +41,24 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         self.button_divide.clicked.connect(self.divide_images)
         self.button_clear_divide.clicked.connect(self.clear_divide)
+
+        # 3 tab
+        self.bg2 = QButtonGroup()
+        self.bg2.addButton(self.check_box_edge_seg, 1)
+        self.bg2.addButton(self.check_box_region, 2)
+        self.bg2.addButton(self.check_box_water, 3)
+        self.bg3 = QButtonGroup()
+        self.bg3.addButton(self.check_box_all, 1)
+        self.bg3.addButton(self.check_box_a, 2)
+        self.bg3.addButton(self.check_box_b, 3)
+        self.list_edges.setIconSize(QtCore.QSize(100, 100))
+        self.list_regions.setIconSize(QtCore.QSize(100, 100))
+
+        self.edges_list = []
+        self.regions_list = []
+
+        self.button_segment.clicked.connect(self.segmentation)
+        self.button_clear_segment.clicked.connect(self.clear_seg)
 
     def add_one_image(self):
         img_path = self.one_image_text.text()
@@ -131,7 +149,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     item = QListWidgetItem(e)
                     item.setIcon(icon)
 
-                    self.images_group_b.append(e)
                     self.list_widget_b.addItem(item)
                 self.completed += (int)(100 / length)
                 self.progress_bar_groups.setValue(self.completed)
@@ -140,7 +157,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
             model = testEdgesKMeans.read_model()
             for e in self.images_list:
                 img = cv2.imread(e)
-                print(testEdgesKMeans.test_group(img, model))
                 if testEdgesKMeans.test_group(img, model) == 0:
                     self.images_group_a.append(e)
 
@@ -166,7 +182,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     item = QListWidgetItem(e)
                     item.setIcon(icon)
 
-                    self.images_group_b.append(e)
                     self.list_widget_b.addItem(item)
                 self.completed += (int)(100 / length)
                 self.progress_bar_groups.setValue(self.completed)
@@ -179,6 +194,55 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.images_group_b.clear()
         self.list_widget_a.clear()
         self.list_widget_b.clear()
+
+    def segmentation(self):
+        list_to_segment = []
+        self.list_regions.clear()
+        self.list_edges.clear()
+        self.edges_list.clear()
+        self.regions_list.clear()
+        self.completed = 0
+        self.progress_bar_seg.setValue(0)
+        if self.check_box_all.isChecked():
+            list_to_segment = self.images_list
+        if self.check_box_a.isChecked():
+            list_to_segment = self.images_group_a
+        if self.check_box_b.isChecked():
+            list_to_segment = self.images_group_b
+        length = len(list_to_segment)
+        if self.check_box_edge_seg.isChecked():
+            for e in list_to_segment:
+                edges, regions = edgeBasedSegmentation.segment_image(e)
+
+                image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_edges.addItem(item)
+                self.edges_list.append(edges)
+
+                image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], regions.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_regions.addItem(item)
+                self.regions_list.append(regions)
+
+                self.completed += (int)(100 / length)
+                self.progress_bar_seg.setValue(self.completed)
+            self.progress_bar_seg.setValue(100)
+
+
+    def clear_seg(self):
+        self.list_regions.clear()
+        self.list_edges.clear()
+        self.edges_list.clear()
+        self.regions_list.clear()
+        self.progress_bar_seg.setValue(0)
 
 
 if __name__ == '__main__':

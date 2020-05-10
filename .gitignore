@@ -2,3 +2,4 @@
 gui/__pycache__/designer.cpython-38.pyc
 group_images/__pycache__/testBlurrLaplacianVariance.cpython-38.pyc
 group_images/__pycache__/testEdgesKMeans.cpython-38.pyc
+__pycache__/edgeBasedSegmentation.cpython-38.pyc
