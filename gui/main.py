@@ -82,7 +82,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.completed = 0
         self.progress_bar_list.setValue(0)
         img_folder = self.folder_text.text()
-        img_folder = img_folder.replace('\\', '/')
         valid_images = [".jpg", ".png"]
         if os.path.exists(img_folder):
             self.wrong_data_error_label.setText("")
