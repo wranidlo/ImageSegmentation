@@ -17,7 +17,7 @@ def test_if_not_blurred(img_name):
 
 
 def main():
-    img_name = "images/test/3096.jpg"
+    img_name = "D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\3096.jpg"
     print(test_if_not_blurred(img_name))
     cv2.imshow('tested_img', cv2.imread(img_name))
     cv2.waitKey(0)

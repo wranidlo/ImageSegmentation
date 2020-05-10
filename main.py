@@ -51,13 +51,13 @@ def displayImagesAndPaths():
 if __name__ == "__main__":
     ImagesPaths = []
     ImagesMiniatures = []
-    loadSingleImageWithPath('images/test/3096.jpg')
-    loadSingleImageWithPath('images/test/8023.jpg')
-    loadSingleImageWithPath('images/test/12084.jpg')
-    loadSingleImageWithPath('images/test/14037.jpg')
-    loadSingleImageWithPath('images/test/16077.jpg')
-    # loadImagesPathsInFolder('images/test/*.jpg')
-    # loadImagesInFolder(ImagesPaths)
+    # loadSingleImageWithPath('images/test/3096.jpg')
+    # loadSingleImageWithPath('images/test/8023.jpg')
+    # loadSingleImageWithPath('images/test/12084.jpg')
+    # loadSingleImageWithPath('images/test/14037.jpg')
+    # loadSingleImageWithPath('images/test/16077.jpg')
+    loadImagesPathsInFolder('images/test/*.jpg')
+    loadImagesInFolder()
     displayImagesAndPaths()
     deleteImage(3)
     displayImagesAndPaths()

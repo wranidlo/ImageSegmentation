@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import glob
 from sklearn import cluster
+import pickle
 
 
 def get_edges_transformed(img):
@@ -25,7 +26,7 @@ def get_edges_value(edges):
 
 def learn():
     image_list = []
-    for filename in glob.glob('images/train/*.jpg'):
+    for filename in glob.glob('D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\train\\*.jpg'):
         img = cv2.imread(filename)
         img_edges_transformed = get_edges_transformed(img)
         img_edges = get_edges(img)
@@ -37,10 +38,30 @@ def learn():
     return k_means
 
 
+def read_model():
+    with open("model_edges.pkl", 'rb') as file:
+        model = pickle.load(file)
+    return model
+
+
+def test_group(img, model):
+
+    edges = get_edges_transformed(img)
+    edges_transformed = get_edges_transformed(img)
+    return model.predict([[get_edges_value(edges_transformed), get_edges_value(edges)]])
+
+
 def main():
-    model = learn()
-    test_names = ["images/test/3096.jpg", "images/test/8023.jpg", "images/test/12084.jpg", "images/test/14037.jpg",
-                  "images/test/16077.jpg"]
+    # model = learn()
+    # with open(pkl_filename, 'wb') as file:
+    #    pickle.dump(model, file)
+    model = read_model()
+
+    test_names = ["D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\3096.jpg",
+                  "D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\8023.jpg",
+                  "D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\12084.jpg",
+                  "D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\14037.jpg",
+                  "D:\\Users\\baryl\Documents\GitHub\ImageSegmentation\images\\test\\16077.jpg"]
     test_list = []
     for e in test_names:
         im = cv2.imread(e)

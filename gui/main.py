@@ -1,10 +1,16 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem
-from PyQt5 import QtGui, QtCore
-from gui.designer import Ui_MainWindow
+import os
 import os.path
+import os.path
+import sys
+
 import cv2
-from group_images import testBlurrLaplacianVariance
-import os, os.path
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem
+
+from group_images import testBlurrLaplacianVariance, testEdgesKMeans
+from gui.designer import Ui_MainWindow
+
+sys.path.append('../')
 
 
 class MainClass(Ui_MainWindow, QMainWindow):
@@ -12,8 +18,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.completed = 0
         self.images_divided = False
         self.images_list = []   # list of loaded images names
-        self.images_group_a = []
-        self.images_group_b = []
+        self.images_group_a = []    # list of images (group a) exists only if images where divided
+        self.images_group_b = []    # list of images (group b) exists only if images where divided
         super(MainClass, self).__init__()
         self.setupUi(self)
 
@@ -34,6 +40,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.list_widget_a.setIconSize(QtCore.QSize(50, 50))
 
         self.button_divide.clicked.connect(self.divide_images)
+        self.button_clear_divide.clicked.connect(self.clear_divide)
 
     def add_one_image(self):
         img_path = self.one_image_text.text()
@@ -61,7 +68,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         valid_images = [".jpg", ".png"]
         if os.path.exists(img_folder):
             self.wrong_data_error_label.setText("")
-            lenght = len(os.listdir(img_folder))
+            length = len(os.listdir(img_folder))
             for f in os.listdir(img_folder):
                 ext = os.path.splitext(f)[1]
                 if ext.lower() not in valid_images:
@@ -77,7 +84,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 item = QtGui.QStandardItem(f)
                 item.setIcon(icon)
                 self.model_list_of_images.appendRow(item)
-                self.completed += (int)(100/lenght)
+                self.completed += (int)(100/length)
                 self.progress_bar_list.setValue(self.completed)
             self.progress_bar_list.setValue(100)
         else:
@@ -89,10 +96,14 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.images_list.clear()
 
     def divide_images(self):
+        self.images_divided = True
+        self.completed = 0
+        self.progress_bar_groups.setValue(0)
         self.images_group_a.clear()
         self.images_group_b.clear()
         self.list_widget_a.clear()
         self.list_widget_b.clear()
+        length = len(self.images_list)
         if self.check_box_blurr.isChecked():
             for e in self.images_list:
                 if testBlurrLaplacianVariance.test_if_not_blurred(e):
@@ -122,6 +133,52 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
                     self.images_group_b.append(e)
                     self.list_widget_b.addItem(item)
+                self.completed += (int)(100 / length)
+                self.progress_bar_groups.setValue(self.completed)
+            self.progress_bar_groups.setValue(100)
+        if self.check_box_edge.isChecked():
+            model = testEdgesKMeans.read_model()
+            for e in self.images_list:
+                img = cv2.imread(e)
+                print(testEdgesKMeans.test_group(img, model))
+                if testEdgesKMeans.test_group(img, model) == 0:
+                    self.images_group_a.append(e)
+
+                    img = cv2.imread(e)
+                    img = cv2.resize(img, (50, 50))
+                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
+                                         QtGui.QImage.Format_RGB888)
+                    icon = QtGui.QIcon()
+                    icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                    item = QListWidgetItem(e)
+                    item.setIcon(icon)
+
+                    self.list_widget_a.addItem(item)
+                else:
+                    self.images_group_b.append(e)
+
+                    img = cv2.imread(e)
+                    img = cv2.resize(img, (50, 50))
+                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
+                                         QtGui.QImage.Format_RGB888).rgbSwapped()
+                    icon = QtGui.QIcon()
+                    icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                    item = QListWidgetItem(e)
+                    item.setIcon(icon)
+
+                    self.images_group_b.append(e)
+                    self.list_widget_b.addItem(item)
+                self.completed += (int)(100 / length)
+                self.progress_bar_groups.setValue(self.completed)
+            self.progress_bar_groups.setValue(100)
+
+    def clear_divide(self):
+        self.images_divided = False
+        self.progress_bar_groups.setValue(0)
+        self.images_group_a.clear()
+        self.images_group_b.clear()
+        self.list_widget_a.clear()
+        self.list_widget_b.clear()
 
 
 if __name__ == '__main__':
