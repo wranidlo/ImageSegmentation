@@ -21,7 +21,7 @@ def printMainMenu():
 
 def printAlgorithmsMenu():
     # classification
-    print("1. Jaccarda Score")
+    print("1. Jaccarda Index")
     print("2. F1 Score")
     # regression
     print("3. Explained Varince Score (additional)")
@@ -106,7 +106,7 @@ class Evaluation:
             self.f1[id]['weighted'] = f1_score(self.trueSeg[id], pred, average="weighted")
             id += 1
 
-    # Recall Score
+    # Explained Variance Score
     def explainedVarianceScoreAlgorithm(self):
         id = 0
         for pred in self.predSeg:
