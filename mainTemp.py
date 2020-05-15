@@ -11,10 +11,15 @@ def loadSingleImageWithPath(path):
     ImagesPaths.append(path)
 
 def loadImagesPathsInFolder(folderPath):
+    # rawImagesPaths = glob.glob(folderPath)
+    # for path in rawImagesPaths:
+    #     ImagesPaths.append(path.replace('\\', '/'))
+    # print(ImagesPaths)
     rawImagesPaths = glob.glob(folderPath)
+    paths = []
     for path in rawImagesPaths:
-        ImagesPaths.append(path.replace('\\', '/'))
-    print(ImagesPaths)
+        paths.append(path.replace('\\', '/'))
+    return paths
 
 def loadImagesInFolder():
     first_id = len(ImagesMiniatures)

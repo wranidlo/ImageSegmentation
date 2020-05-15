@@ -89,7 +89,7 @@ class watershedSegmentation:
 		markerPath = self.resultsFolderPath + fileName + "-WatershedMarker.png"
 		cv2.imwrite(binaryPath, self.unknown)
 		plt.imsave(markerPath, self.markerImage)
-		# cv2.imwrite('results/WSBinary.jpg', self.unknown)
+		# cv2.imwrite('results/WSBInary.jpg', self.unknown)
 		# plt.imsave('results/WSMarker.png', self.markerImage)
 
 

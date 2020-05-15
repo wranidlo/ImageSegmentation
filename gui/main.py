@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidget
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
 import edgeBasedSegmentation
+import mainTemp #TEMP
+import evaluation
 sys.path.append('../')
 
 
@@ -59,6 +61,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         self.button_segment.clicked.connect(self.segmentation)
         self.button_clear_segment.clicked.connect(self.clear_seg)
+
+        self.pushButton_evaluation.clicked.connect(self.evaluation)
 
     def add_one_image(self):
         img_path = self.one_image_text.text()
@@ -242,6 +246,100 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.edges_list.clear()
         self.regions_list.clear()
         self.progress_bar_seg.setValue(0)
+
+
+    def evaluation(self):
+        self.list_ev_results.clear()
+        self.completed = 0
+        self.progressBar_evaluation.setValue(0)
+        algorithms = [0, 0, 0, 0]
+        if self.check_ev_alg_jaccarda.isChecked():
+            algorithms[0] = 1
+        if self.check_ev_alg_f1_score.isChecked():
+            algorithms[1] = 1
+        if self.check_ev_alg_evs.isChecked():
+            algorithms[2] = 1
+        if self.check_ev_alg_mse.isChecked():
+            algorithms[3] = 1
+        ground_true_folder = self.line_ev_true_folder.text()
+        ground_true_folder += "/*.bmp"
+        true_segmentation_paths = mainTemp.loadImagesPathsInFolder(ground_true_folder)
+        print("folder: ", ground_true_folder)
+        print("paths: ", true_segmentation_paths)
+        predicted_folder = self.line_ev_pred_folder.text()
+        predicted_folder += "/*.jpg"
+        print("folder: ", predicted_folder)
+        predicted_segmentation_paths = mainTemp.loadImagesPathsInFolder(predicted_folder)
+        print("before ", predicted_segmentation_paths)
+        predicted_segmentation_paths = self.filterPredictedPathsForEvaluation(predicted_segmentation_paths, 'Binary')
+        print("after ", predicted_segmentation_paths)
+        evaluation_paths = self.connectPaths(predicted_segmentation_paths, true_segmentation_paths)
+        evaluation_results = []
+        length = len(evaluation_paths)
+        for path in evaluation_paths:
+            # TODO fix displaying many elements in list row or maybe change on QTable
+            # Evaluation
+            ev = evaluation.Evaluation(evaluation_paths, algorithms)
+            evaluation_results.append(ev.getResults())
+            #Displaying result
+            pred_img = cv2.imread(evaluation_results[0]["predicted path"])
+            true_img = cv2.imread(evaluation_results[0]["true path"])
+            pred_img = cv2.resize(pred_img, (50, 50))
+            true_img = cv2.resize(true_img, (50,50))
+            pred_img = QtGui.QImage(pred_img.data, pred_img.shape[1], pred_img.shape[0], 3 * pred_img.shape[1],
+                                 QtGui.QImage.Format_RGB888)
+            true_img = QtGui.QImage(true_img.data, true_img.shape[1], true_img.shape[0], 3 * true_img.shape[1],
+                                    QtGui.QImage.Format_RGB888)
+            pred_icon = QtGui.QIcon()
+            true_icon = QtGui.QIcon()
+            pred_icon.addPixmap(QtGui.QPixmap.fromImage(pred_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            true_icon.addPixmap(QtGui.QPixmap.fromImage(true_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
+            ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
+            ["explained variance score"], evaluation_results[0]["mean squared error"])
+            #item.setIcon(icon)
+            self.list_ev_results.addItem(item)
+            # Update progress bar
+            self.completed += (int)(100 / length)
+            self.progress_bar_seg.setValue(self.completed)
+        self.progress_bar_seg.setValue(100)
+        # TODO diplaying results
+
+
+    def filterPredictedPathsForEvaluation(self, paths, keyString):
+        filtered_paths = [path for path in paths if keyString in path]
+        return filtered_paths
+
+
+    def connectPaths(self, predicted, true):
+        connectedPaths = []
+        for pred_path in predicted:
+            name = self.getImageNameFromFilePath(pred_path)
+            true_path = self.findGroundTruthForImage(name, true)
+            # TODO exception not found
+            if true_path == "":
+                None
+            # TODO
+            connectedPaths.append([true_path, pred_path])
+        return connectedPaths
+
+
+    def getImageNameFromFilePath(self, filePath):
+        words = self.originalPath.split('/')
+        fileAndExtension = words[len(words) - 1]
+        fileAndExtensionList = fileAndExtension.split('.')
+        fileName = fileAndExtensionList[0]
+        extensionName = fileAndExtensionList[1]
+        return fileName
+
+
+    def findGroundTruthForImage(self, imageName, groundTruthPaths):
+        for path in groundTruthPaths:
+            fileName = self.getImageNameFromFilePath(path)
+            foundName = (fileName.split('-'))[0]
+            if foundName == imageName:
+                return path
+        return ""
 
 
 def main():
