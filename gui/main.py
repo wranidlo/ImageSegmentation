@@ -10,18 +10,23 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidget
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
 import edgeBasedSegmentation
-import mainTemp #TEMP
+import mainTemp  # TEMP
 import evaluation
+import watershedSegmentation
+
+from matplotlib import pyplot as plt
+
 sys.path.append('../')
 
 
 class MainClass(Ui_MainWindow, QMainWindow):
     def __init__(self):
-        self.completed = 0
+        self.completed = 0  # status bar
         self.images_divided = False
-        self.images_list = []   # list of loaded images names
-        self.images_group_a = []    # list of images (group a) exists only if images where divided
-        self.images_group_b = []    # list of images (group b) exists only if images where divided
+        self.images_list = []  # list of loaded images names
+        self.images_group_a = []  # list of images (group a) exists only if images where divided
+        self.images_group_b = []  # list of images (group b) exists only if images where divided
+        self.list_to_segment = []   # list of images names to segment
         super(MainClass, self).__init__()
         self.setupUi(self)
 
@@ -61,7 +66,11 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         self.button_segment.clicked.connect(self.segmentation)
         self.button_clear_segment.clicked.connect(self.clear_seg)
+        self.button_save.clicked.connect(self.save_seg)
 
+        self.seg_type = ""
+
+        #  4 tab
         self.pushButton_evaluation.clicked.connect(self.evaluation)
 
     def add_one_image(self):
@@ -71,8 +80,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
             img = cv2.imread(img_path)
             self.images_list.append(img_path)
             img = cv2.resize(img, (50, 50))
-            image = QtGui.QImage(img.data, img.shape[1], img.shape[0],  3*img.shape[1],
-                                      QtGui.QImage.Format_RGB888).rgbSwapped()
+            image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
+                                 QtGui.QImage.Format_RGB888).rgbSwapped()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item = QtGui.QStandardItem(img_path)
@@ -98,14 +107,14 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 img = cv2.imread(f)
                 self.images_list.append(f)
                 img = cv2.resize(img, (50, 50))
-                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3*img.shape[1],
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QtGui.QStandardItem(f)
                 item.setIcon(icon)
                 self.model_list_of_images.appendRow(item)
-                self.completed += (int)(100/length)
+                self.completed += (int)(100 / length)
                 self.progress_bar_list.setValue(self.completed)
             self.progress_bar_list.setValue(100)
         else:
@@ -132,7 +141,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
                     img = cv2.imread(e)
                     img = cv2.resize(img, (50, 50))
-                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3*img.shape[1],
+                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
                                          QtGui.QImage.Format_RGB888)
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -145,7 +154,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
                     img = cv2.imread(e)
                     img = cv2.resize(img, (50, 50))
-                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3*img.shape[1],
+                    image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
                                          QtGui.QImage.Format_RGB888).rgbSwapped()
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -199,7 +208,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.list_widget_b.clear()
 
     def segmentation(self):
-        list_to_segment = []
+        self.list_to_segment = []
         self.list_regions.clear()
         self.list_edges.clear()
         self.edges_list.clear()
@@ -207,14 +216,15 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.completed = 0
         self.progress_bar_seg.setValue(0)
         if self.check_box_all.isChecked():
-            list_to_segment = self.images_list
+            self.list_to_segment = self.images_list
         if self.check_box_a.isChecked():
-            list_to_segment = self.images_group_a
+            self.list_to_segment = self.images_group_a
         if self.check_box_b.isChecked():
-            list_to_segment = self.images_group_b
-        length = len(list_to_segment)
+            self.list_to_segment = self.images_group_b
+        length = len(self.list_to_segment)
         if self.check_box_edge_seg.isChecked():
-            for e in list_to_segment:
+            self.seg_type = "Edge"
+            for e in self.list_to_segment:
                 edges, regions = edgeBasedSegmentation.segment_image(e)
 
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
@@ -238,7 +248,34 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 self.completed += (int)(100 / length)
                 self.progress_bar_seg.setValue(self.completed)
             self.progress_bar_seg.setValue(100)
+        if self.check_box_water.isChecked():
+            self.seg_type = "Watershed"
+            for e in self.list_to_segment:
+                segmentation = watershedSegmentation.watershedSegmentation(e)
 
+                edges, regions = segmentation.getResults()
+                plt.imsave('images/temp.png', regions)
+                regions = cv2.imread('images/temp.png')
+                image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_edges.addItem(item)
+                self.edges_list.append(edges)
+                image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], 3 * regions.shape[1],
+                                     QtGui.QImage.Format_RGB888).rgbSwapped()
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_regions.addItem(item)
+                self.regions_list.append(regions)
+
+                self.completed += (int)(100 / length)
+                self.progress_bar_seg.setValue(self.completed)
+            self.progress_bar_seg.setValue(100)
 
     def clear_seg(self):
         self.list_regions.clear()
@@ -246,7 +283,21 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.edges_list.clear()
         self.regions_list.clear()
         self.progress_bar_seg.setValue(0)
+        self.list_to_segment.clear()
 
+    def save_seg(self):
+        img_folder = self.text_save_location.text()
+        if os.path.exists(img_folder):
+            for i in range(0, len(self.list_to_segment)):
+                words = self.list_to_segment[i].split('\\')
+                fileAndExtension = words[len(words) - 1]
+                fileAndExtensionList = fileAndExtension.split('.')
+                fileName = fileAndExtensionList[0]
+                extensionName = fileAndExtensionList[1]
+                binaryPath = img_folder + '\\' + fileName + "-" +self.seg_type + "Binary." + extensionName
+                markerPath = img_folder + '\\' + fileName + "-" +self.seg_type + "Marker.png"
+                cv2.imwrite(binaryPath, self.edges_list[i])
+                plt.imsave(markerPath, self.regions_list[i])
 
     def evaluation(self):
         self.list_ev_results.clear()
@@ -281,13 +332,13 @@ class MainClass(Ui_MainWindow, QMainWindow):
             # Evaluation
             ev = evaluation.Evaluation(evaluation_paths, algorithms)
             evaluation_results.append(ev.getResults())
-            #Displaying result
+            # Displaying result
             pred_img = cv2.imread(evaluation_results[0]["predicted path"])
             true_img = cv2.imread(evaluation_results[0]["true path"])
             pred_img = cv2.resize(pred_img, (50, 50))
-            true_img = cv2.resize(true_img, (50,50))
+            true_img = cv2.resize(true_img, (50, 50))
             pred_img = QtGui.QImage(pred_img.data, pred_img.shape[1], pred_img.shape[0], 3 * pred_img.shape[1],
-                                 QtGui.QImage.Format_RGB888)
+                                    QtGui.QImage.Format_RGB888)
             true_img = QtGui.QImage(true_img.data, true_img.shape[1], true_img.shape[0], 3 * true_img.shape[1],
                                     QtGui.QImage.Format_RGB888)
             pred_icon = QtGui.QIcon()
@@ -296,8 +347,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
             true_icon.addPixmap(QtGui.QPixmap.fromImage(true_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
             ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
-            ["explained variance score"], evaluation_results[0]["mean squared error"])
-            #item.setIcon(icon)
+                                   ["explained variance score"], evaluation_results[0]["mean squared error"])
+            # item.setIcon(icon)
             self.list_ev_results.addItem(item)
             # Update progress bar
             self.completed += (int)(100 / length)
@@ -305,11 +356,9 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.progress_bar_seg.setValue(100)
         # TODO diplaying results
 
-
     def filterPredictedPathsForEvaluation(self, paths, keyString):
         filtered_paths = [path for path in paths if keyString in path]
         return filtered_paths
-
 
     def connectPaths(self, predicted, true):
         connectedPaths = []
@@ -323,7 +372,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
             connectedPaths.append([true_path, pred_path])
         return connectedPaths
 
-
     def getImageNameFromFilePath(self, filePath):
         words = self.originalPath.split('/')
         fileAndExtension = words[len(words) - 1]
@@ -331,7 +379,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
         fileName = fileAndExtensionList[0]
         extensionName = fileAndExtensionList[1]
         return fileName
-
 
     def findGroundTruthForImage(self, imageName, groundTruthPaths):
         for path in groundTruthPaths:
@@ -351,4 +398,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
