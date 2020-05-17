@@ -5,7 +5,7 @@ import sys
 
 import cv2
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidget,QTableWidgetItem
 
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
@@ -326,7 +326,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 plt.imsave(markerPath, self.regions_list[i])
 
     def evaluation(self):
-        self.list_ev_results.clear()
+        self.table_ev_results.setRowCount(0)
         self.completed = 0
         self.progressBar_evaluation.setValue(0)
         algorithms = [0, 0, 0, 0]
@@ -341,41 +341,61 @@ class MainClass(Ui_MainWindow, QMainWindow):
         ground_true_folder = self.line_ev_true_folder.text()
         ground_true_folder += "/*.bmp"
         true_segmentation_paths = mainTemp.loadImagesPathsInFolder(ground_true_folder)
-        print("folder: ", ground_true_folder)
-        print("paths: ", true_segmentation_paths)
         predicted_folder = self.line_ev_pred_folder.text()
         predicted_folder += "/*.jpg"
-        print("folder: ", predicted_folder)
         predicted_segmentation_paths = mainTemp.loadImagesPathsInFolder(predicted_folder)
-        print("before ", predicted_segmentation_paths)
         predicted_segmentation_paths = self.filterPredictedPathsForEvaluation(predicted_segmentation_paths, 'Binary')
-        print("after ", predicted_segmentation_paths)
         evaluation_paths = self.connectPaths(predicted_segmentation_paths, true_segmentation_paths)
         evaluation_results = []
         length = len(evaluation_paths)
+        row = 0
         for path in evaluation_paths:
             # TODO fix displaying many elements in list row or maybe change on QTable
             # Evaluation
             ev = evaluation.Evaluation(evaluation_paths, algorithms)
-            evaluation_results.append(ev.getResults())
+            curent_results = ev.getResults()[0]
+            evaluation_results.append(curent_results)
+            print("evaluation results: ", evaluation_results)
             # Displaying result
-            pred_img = cv2.imread(evaluation_results[0]["predicted path"])
-            true_img = cv2.imread(evaluation_results[0]["true path"])
+            print(curent_results)
+            print("pred path: ", curent_results["predicted path"])
+            print("true path: ", curent_results["true path"])
+            pred_img = cv2.imread(curent_results["predicted path"])
+            true_img = cv2.imread(curent_results["true path"])
+            print("images loaded")
             pred_img = cv2.resize(pred_img, (50, 50))
             true_img = cv2.resize(true_img, (50, 50))
+            print("images resized")
             pred_img = QtGui.QImage(pred_img.data, pred_img.shape[1], pred_img.shape[0], 3 * pred_img.shape[1],
                                     QtGui.QImage.Format_RGB888)
             true_img = QtGui.QImage(true_img.data, true_img.shape[1], true_img.shape[0], 3 * true_img.shape[1],
                                     QtGui.QImage.Format_RGB888)
+            print("images changed into QImage")
             pred_icon = QtGui.QIcon()
             true_icon = QtGui.QIcon()
             pred_icon.addPixmap(QtGui.QPixmap.fromImage(pred_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             true_icon.addPixmap(QtGui.QPixmap.fromImage(true_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
-            ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
-                                   ["explained variance score"], evaluation_results[0]["mean squared error"])
-            # item.setIcon(icon)
-            self.list_ev_results.addItem(item)
+            print("images changed into icons")
+            # rowPosition = self.table_ev_results.rowCount()
+            self.table_ev_results.setRowCount(length)
+            # item = QtGui.QTableWidgetItem("")
+            # item.setIcon(pred_icon)
+            self.table_ev_results.setItem(row, 0, QTableWidgetItem("").setIcon(pred_icon))
+            # item = QtGui.QTableWidgetItem("")
+            # item.setIcon(true_icon)
+            self.table_ev_results.setItem(row, 1, QTableWidgetItem(""))
+            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(curent_results["jaccarda index weighted"])))
+            self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(curent_results["f1 score weighted"])))
+            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(curent_results["explained variance score"])))
+            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(curent_results["mean squared error"])))
+            print("testDisplay")
+            row += 1
+            # item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
+            # ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
+            #                        ["explained variance score"], evaluation_results[0]["mean squared error"])
+            # # item.setIcon(icon)
+            # self.list_ev_results.addItem(item)
+
             # Update progress bar
             self.completed += (int)(100 / length)
             self.progress_bar_seg.setValue(self.completed)
@@ -389,26 +409,33 @@ class MainClass(Ui_MainWindow, QMainWindow):
     def connectPaths(self, predicted, true):
         connectedPaths = []
         for pred_path in predicted:
-            name = self.getImageNameFromFilePath(pred_path)
-            true_path = self.findGroundTruthForImage(name, true)
+            file_name = self.getFileNameFromFilePath(pred_path)
+            image_name = self.getImageNameFromFileName(file_name)
+            true_path = self.findGroundTruthForImage(image_name, true)
             # TODO exception not found
             if true_path == "":
                 None
             # TODO
             connectedPaths.append([true_path, pred_path])
+        print("evaluation paths: ", connectedPaths)
         return connectedPaths
 
-    def getImageNameFromFilePath(self, filePath):
-        words = self.originalPath.split('/')
+    def getFileNameFromFilePath(self, filePath):
+        words = filePath.split('/')
         fileAndExtension = words[len(words) - 1]
         fileAndExtensionList = fileAndExtension.split('.')
         fileName = fileAndExtensionList[0]
         extensionName = fileAndExtensionList[1]
         return fileName
 
+    def getImageNameFromFileName(self, fileName):
+        words = fileName.split('-')
+        image = words[0]
+        return image
+
     def findGroundTruthForImage(self, imageName, groundTruthPaths):
         for path in groundTruthPaths:
-            fileName = self.getImageNameFromFilePath(path)
+            fileName = self.getFileNameFromFilePath(path)
             foundName = (fileName.split('-'))[0]
             if foundName == imageName:
                 return path

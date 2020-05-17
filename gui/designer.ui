@@ -24,7 +24,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab1">
        <property name="sizePolicy">
@@ -570,10 +570,10 @@
        <widget class="QWidget" name="verticalLayoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>320</x>
-          <y>50</y>
-          <width>441</width>
-          <height>401</height>
+          <x>10</x>
+          <y>140</y>
+          <width>761</width>
+          <height>321</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -591,17 +591,51 @@
           </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="list_ev_results"/>
+          <widget class="QTableWidget" name="table_ev_results">
+           <property name="columnCount">
+            <number>6</number>
+           </property>
+           <column>
+            <property name="text">
+             <string>Predykcja</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Prawda</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>JI</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>F1</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>EVS</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>MSE</string>
+            </property>
+           </column>
+          </widget>
          </item>
         </layout>
        </widget>
        <widget class="QWidget" name="verticalLayoutWidget_3">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>150</y>
-          <width>291</width>
-          <height>96</height>
+          <x>190</x>
+          <y>0</y>
+          <width>281</width>
+          <height>51</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -625,6 +659,44 @@
            </property>
           </widget>
          </item>
+        </layout>
+       </widget>
+       <widget class="QProgressBar" name="progressBar_evaluation">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>110</y>
+          <width>481</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_evaluation">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>110</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Ewaluacja</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>50</y>
+          <width>281</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QLabel" name="label_ev_pred_folder">
            <property name="font">
@@ -647,31 +719,43 @@
          </item>
         </layout>
        </widget>
-       <widget class="QProgressBar" name="progressBar_evaluation">
+       <widget class="QTableWidget" name="tableWidget">
         <property name="geometry">
          <rect>
-          <x>320</x>
+          <x>485</x>
           <y>10</y>
-          <width>451</width>
-          <height>23</height>
+          <width>271</width>
+          <height>91</height>
          </rect>
         </property>
-        <property name="value">
-         <number>0</number>
+        <property name="columnCount">
+         <number>3</number>
         </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_evaluation">
-        <property name="geometry">
-         <rect>
-          <x>210</x>
-          <y>10</y>
-          <width>93</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Ewaluacja</string>
-        </property>
+        <row>
+         <property name="text">
+          <string>Grupa 1</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Grupa 2</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>Seg 1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Seg 2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Seg 3</string>
+         </property>
+        </column>
        </widget>
       </widget>
      </widget>

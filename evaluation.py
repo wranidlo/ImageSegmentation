@@ -31,20 +31,21 @@ from matplotlib import pyplot as plt
 
 class Evaluation:
     # IMPORTANT! seg_path is list of lists with truePath at 0 and predPath at 1
-    def __init__(self, seg_paths=[], algorithms=[1, 0, 0, 0, 0]):
+    def __init__(self, seg_paths=[], algorithms=[0, 0, 0, 0]):
         self.segPaths = seg_paths
         self.results = []
         self.loadImagesFromPaths()
         self.algorithmsToExecute = algorithms
-        if self.algorithmsToExecute[0] == 1:
+        if self.algorithmsToExecute[0] == 1 and self.algorithmsToExecute[1] == 1 and self.algorithmsToExecute[2] == 1 \
+                and self.algorithmsToExecute[3] == 1:
             self.allAlgorithms()
-        if self.algorithmsToExecute[1] == 1:
+        if self.algorithmsToExecute[0] == 1:
             self.jaccardScoreAlgorithm()
-        if self.algorithmsToExecute[2] == 1:
+        if self.algorithmsToExecute[1] == 1:
             self.F1ScoreAlgorithm()
-        if self.algorithmsToExecute[3] == 1:
+        if self.algorithmsToExecute[2] == 1:
             self.explainedVarianceScoreAlgorithm()
-        if self.algorithmsToExecute[4] == 1:
+        if self.algorithmsToExecute[3] == 1:
             self.meanSquaredErrorAlgorithm()
 
     def loadImagesFromPaths(self):
