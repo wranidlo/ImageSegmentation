@@ -13,6 +13,7 @@ import edgeBasedSegmentation
 import mainTemp  # TEMP
 import evaluation
 import watershedSegmentation
+import RegionSegmentation
 
 from matplotlib import pyplot as plt
 
@@ -256,6 +257,31 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 edges, regions = segmentation.getResults()
                 plt.imsave('images/temp.png', regions)
                 regions = cv2.imread('images/temp.png')
+                image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_edges.addItem(item)
+                self.edges_list.append(edges)
+                image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], 3 * regions.shape[1],
+                                     QtGui.QImage.Format_RGB888).rgbSwapped()
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(e)
+                item.setIcon(icon)
+                self.list_regions.addItem(item)
+                self.regions_list.append(regions)
+
+                self.completed += (int)(100 / length)
+                self.progress_bar_seg.setValue(self.completed)
+            self.progress_bar_seg.setValue(100)
+        if self.check_box_region.isChecked():
+            self.seg_type = "Region"
+            for e in self.list_to_segment:
+                image = cv2.imread(e, 1)
+                regions, edges = RegionSegmentation.auto_region_growing(image)
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
