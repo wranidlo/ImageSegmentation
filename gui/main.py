@@ -5,7 +5,8 @@ import sys
 
 import cv2
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidget,QTableWidgetItem
+from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidget, QTableWidgetItem, \
+    QHeaderView
 
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
@@ -73,6 +74,9 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         #  4 tab
         self.pushButton_evaluation.clicked.connect(self.evaluation)
+        self.table_ev_results.setIconSize(QtCore.QSize(100, 100))
+        self.table_ev_results.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.table_ev_results.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
     def add_one_image(self):
         img_path = self.one_image_text.text()
@@ -349,19 +353,19 @@ class MainClass(Ui_MainWindow, QMainWindow):
         evaluation_results = []
         length = len(evaluation_paths)
         row = 0
-        for path in evaluation_paths:
+        ev = evaluation.Evaluation(evaluation_paths, algorithms)
+        for current_results in ev.getResults():
+            print(ev)
             # TODO fix displaying many elements in list row or maybe change on QTable
             # Evaluation
-            ev = evaluation.Evaluation(evaluation_paths, algorithms)
-            curent_results = ev.getResults()[0]
-            evaluation_results.append(curent_results)
+            evaluation_results.append(current_results)
             print("evaluation results: ", evaluation_results)
             # Displaying result
-            print(curent_results)
-            print("pred path: ", curent_results["predicted path"])
-            print("true path: ", curent_results["true path"])
-            pred_img = cv2.imread(curent_results["predicted path"])
-            true_img = cv2.imread(curent_results["true path"])
+            print(current_results)
+            print("pred path: ", current_results["predicted path"])
+            print("true path: ", current_results["true path"])
+            pred_img = cv2.imread(current_results["predicted path"])
+            true_img = cv2.imread(current_results["true path"])
             print("images loaded")
             pred_img = cv2.resize(pred_img, (50, 50))
             true_img = cv2.resize(true_img, (50, 50))
@@ -378,16 +382,17 @@ class MainClass(Ui_MainWindow, QMainWindow):
             print("images changed into icons")
             # rowPosition = self.table_ev_results.rowCount()
             self.table_ev_results.setRowCount(length)
-            # item = QtGui.QTableWidgetItem("")
-            # item.setIcon(pred_icon)
-            self.table_ev_results.setItem(row, 0, QTableWidgetItem("").setIcon(pred_icon))
-            # item = QtGui.QTableWidgetItem("")
-            # item.setIcon(true_icon)
-            self.table_ev_results.setItem(row, 1, QTableWidgetItem(""))
-            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(curent_results["jaccarda index weighted"])))
-            self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(curent_results["f1 score weighted"])))
-            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(curent_results["explained variance score"])))
-            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(curent_results["mean squared error"])))
+            item = QTableWidgetItem(current_results["predicted path"])
+            item.setIcon(pred_icon)
+            self.table_ev_results.setItem(row, 0, item)
+            item = QTableWidgetItem(current_results["true path"])
+            item.setIcon(true_icon)
+            self.table_ev_results.setItem(row, 1, item)
+            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(current_results["jaccarda index weighted"])))
+            self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(current_results["f1 score weighted"])))
+            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(current_results["explained variance score"])))
+            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(current_results["mean squared error"])))
+            self.table_ev_results.resizeRowsToContents()
             print("testDisplay")
             row += 1
             # item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
@@ -398,8 +403,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
             # Update progress bar
             self.completed += (int)(100 / length)
-            self.progress_bar_seg.setValue(self.completed)
-        self.progress_bar_seg.setValue(100)
+            self.progressBar_evaluation.setValue(self.completed)
+        self.progressBar_evaluation.setValue(100)
         # TODO diplaying results
 
     def filterPredictedPathsForEvaluation(self, paths, keyString):
