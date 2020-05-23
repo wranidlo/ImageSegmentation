@@ -5,16 +5,16 @@ import sys
 
 import cv2
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidget, QTableWidgetItem, \
+from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidgetItem, \
     QHeaderView
 
 from group_images import testBlurrLaplacianVariance, testEdgesKMeans
 from gui.designer import Ui_MainWindow
 import edgeBasedSegmentation
-import mainTemp  # TEMP
 import evaluation
 import watershedSegmentation
 import RegionSegmentation
+import Filters
 
 from matplotlib import pyplot as plt
 
@@ -36,22 +36,36 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.model_list_of_images = QtGui.QStandardItemModel()
         self.list_of_images.setModel(self.model_list_of_images)
         self.list_of_images.setIconSize(QtCore.QSize(50, 50))
-
         self.add_one_image_button.clicked.connect(self.add_one_image)
         self.add_folder_button.clicked.connect(self.add_folder)
         self.delete_button.clicked.connect(self.delete_image_from_list)
 
         # 2 tab
+        self.filtered_images = []
+        self.list_to_filter = []
+        self.filter_type = ""
+        self.bg_filter = QButtonGroup()
+        self.bg_filter.addButton(self.radio_button_bilateral, 1)
+        self.bg_filter.addButton(self.radio_button_gaussian, 2)
+        self.bg_filter.addButton(self.radio_button_median, 3)
+        self.list_widget_filter.setIconSize(QtCore.QSize(150, 150))
+        self.push_button_filter.clicked.connect(self.run_filter)
+        self.push_button_save_filter.clicked.connect(self.save_filter)
+        self.list_widget_filter.itemDoubleClicked.connect(self.show_clicked_filter)
+
+        # 3 tab
         self.bg = QButtonGroup()
         self.bg.addButton(self.check_box_edge, 1)
         self.bg.addButton(self.check_box_blurr, 2)
         self.list_widget_b.setIconSize(QtCore.QSize(50, 50))
         self.list_widget_a.setIconSize(QtCore.QSize(50, 50))
+        self.list_widget_a.itemDoubleClicked.connect(self.show_clicked_a)
+        self.list_widget_b.itemDoubleClicked.connect(self.show_clicked_b)
 
         self.button_divide.clicked.connect(self.divide_images)
         self.button_clear_divide.clicked.connect(self.clear_divide)
 
-        # 3 tab
+        # 4 tab
         self.bg2 = QButtonGroup()
         self.bg2.addButton(self.check_box_edge_seg, 1)
         self.bg2.addButton(self.check_box_region, 2)
@@ -60,8 +74,10 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.bg3.addButton(self.check_box_all, 1)
         self.bg3.addButton(self.check_box_a, 2)
         self.bg3.addButton(self.check_box_b, 3)
-        self.list_edges.setIconSize(QtCore.QSize(100, 100))
-        self.list_regions.setIconSize(QtCore.QSize(100, 100))
+        self.list_widget_edges.setIconSize(QtCore.QSize(100, 100))
+        self.list_widget_regions.setIconSize(QtCore.QSize(100, 100))
+        self.list_widget_edges.itemDoubleClicked.connect(self.show_clicked_edges)
+        self.list_widget_regions.itemDoubleClicked.connect(self.show_clicked_regions)
 
         self.edges_list = []
         self.regions_list = []
@@ -72,7 +88,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         self.seg_type = ""
 
-        #  4 tab
+        #  5 tab
         self.pushButton_evaluation.clicked.connect(self.evaluation)
         self.table_ev_results.setIconSize(QtCore.QSize(100, 100))
         self.table_ev_results.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
@@ -100,7 +116,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.completed = 0
         self.progress_bar_list.setValue(0)
         img_folder = self.folder_text.text()
-        valid_images = [".jpg", ".png"]
+        valid_images = [".jpg", ".png", ".bmp"]
         if os.path.exists(img_folder):
             self.wrong_data_error_label.setText("")
             length = len(os.listdir(img_folder))
@@ -119,7 +135,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 item = QtGui.QStandardItem(self.getShortFilePath(f))
                 item.setIcon(icon)
                 self.model_list_of_images.appendRow(item)
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_list.setValue(self.completed)
             self.progress_bar_list.setValue(100)
         else:
@@ -129,6 +145,84 @@ class MainClass(Ui_MainWindow, QMainWindow):
     def delete_image_from_list(self):
         self.model_list_of_images.clear()
         self.images_list.clear()
+
+    def run_filter(self):
+        self.list_to_filter = self.images_list
+        self.filtered_images.clear()
+        self.list_widget_filter.clear()
+        self.progress_bar_filter.setValue(0)
+        self.completed = 0
+        length = len(self.images_list)
+        if self.radio_button_median.isChecked():
+            self.filter_type = "Median"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Filters.Median_filter(img, 3)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+        if self.radio_button_gaussian.isChecked():
+            self.filter_type = "Gaussian"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Filters.GaussianBlurImage(img, 3)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+        if self.radio_button_bilateral.isChecked():
+            self.filter_type = "Bilateral"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Filters.Bilateral_filter(img, 30, 30)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+
+    def save_filter(self):
+        img_folder = self.line_edit_filter.text()
+        if os.path.exists(img_folder):
+            for i in range(0, len(self.list_to_filter)):
+                words = self.list_to_filter[i].split('\\')
+                file_and_extension = words[len(words) - 1]
+                file_and_extension_list = file_and_extension.split('.')
+                file_name = file_and_extension_list[0]
+                new_path = img_folder + '\\' + file_name + "-" + self.filter_type + "Filter.png"
+                cv2.imwrite(new_path, self.filtered_images[i])
+
+    def show_clicked_filter(self):
+        row = self.list_widget_filter.currentRow()
+        cv2.imshow("Image", self.filtered_images[row])
+        cv2.waitKey()
 
     def divide_images(self):
         self.images_divided = True
@@ -167,7 +261,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     item.setIcon(icon)
 
                     self.list_widget_b.addItem(item)
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_groups.setValue(self.completed)
             self.progress_bar_groups.setValue(100)
         if self.check_box_edge.isChecked():
@@ -200,7 +294,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     item.setIcon(icon)
 
                     self.list_widget_b.addItem(item)
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_groups.setValue(self.completed)
             self.progress_bar_groups.setValue(100)
 
@@ -212,10 +306,20 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.list_widget_a.clear()
         self.list_widget_b.clear()
 
+    def show_clicked_a(self):
+        row = self.list_widget_a.currentRow()
+        cv2.imshow("Image", cv2.imread(self.images_group_a[row]))
+        cv2.waitKey()
+
+    def show_clicked_b(self):
+        row = self.list_widget_b.currentRow()
+        cv2.imshow("Image", cv2.imread(self.images_group_b[row]))
+        cv2.waitKey()
+
     def segmentation(self):
         self.list_to_segment = []
-        self.list_regions.clear()
-        self.list_edges.clear()
+        self.list_widget_regions.clear()
+        self.list_widget_edges.clear()
         self.edges_list.clear()
         self.regions_list.clear()
         self.completed = 0
@@ -238,7 +342,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_edges.addItem(item)
+                self.list_widget_edges.addItem(item)
                 self.edges_list.append(edges)
 
                 image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], regions.shape[1],
@@ -247,10 +351,10 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_regions.addItem(item)
+                self.list_widget_regions.addItem(item)
                 self.regions_list.append(regions)
 
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_seg.setValue(self.completed)
             self.progress_bar_seg.setValue(100)
         if self.check_box_water.isChecked():
@@ -258,7 +362,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
             for e in self.list_to_segment:
                 segmentation = watershedSegmentation.watershedSegmentation(e)
                 edges, regions = segmentation.getResults()
-                plt.imsave('images/temp.png', regions) # TODO here crash
+                plt.imsave('images/temp.png', regions)
                 regions = cv2.imread('images/temp.png')
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
                                      QtGui.QImage.Format_Grayscale8)
@@ -266,7 +370,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_edges.addItem(item)
+                self.list_widget_edges.addItem(item)
                 self.edges_list.append(edges)
                 image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], 3 * regions.shape[1],
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
@@ -274,10 +378,10 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_regions.addItem(item)
+                self.list_widget_regions.addItem(item)
                 self.regions_list.append(regions)
 
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_seg.setValue(self.completed)
             self.progress_bar_seg.setValue(100)
         if self.check_box_region.isChecked():
@@ -291,7 +395,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_edges.addItem(item)
+                self.list_widget_edges.addItem(item)
                 self.edges_list.append(edges)
                 image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], 3 * regions.shape[1],
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
@@ -299,34 +403,44 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
-                self.list_regions.addItem(item)
+                self.list_widget_regions.addItem(item)
                 self.regions_list.append(regions)
 
-                self.completed += (int)(100 / length)
+                self.completed += int(100 / length)
                 self.progress_bar_seg.setValue(self.completed)
             self.progress_bar_seg.setValue(100)
 
     def clear_seg(self):
-        self.list_regions.clear()
-        self.list_edges.clear()
+        self.list_widget_regions.clear()
+        self.list_widget_edges.clear()
         self.edges_list.clear()
         self.regions_list.clear()
         self.progress_bar_seg.setValue(0)
         self.list_to_segment.clear()
+
+    def show_clicked_edges(self):
+        row = self.list_widget_edges.currentRow()
+        cv2.imshow("Image", self.edges_list[row])
+        cv2.waitKey()
+
+    def show_clicked_regions(self):
+        row = self.list_widget_regions.currentRow()
+        cv2.imshow("Image", self.regions_list[row])
+        cv2.waitKey()
 
     def save_seg(self):
         img_folder = self.text_save_location.text()
         if os.path.exists(img_folder):
             for i in range(0, len(self.list_to_segment)):
                 words = self.list_to_segment[i].split('\\')
-                fileAndExtension = words[len(words) - 1]
-                fileAndExtensionList = fileAndExtension.split('.')
-                fileName = fileAndExtensionList[0]
-                extensionName = fileAndExtensionList[1]
-                binaryPath = img_folder + '\\' + fileName + "-" +self.seg_type + "Binary." + extensionName
-                markerPath = img_folder + '\\' + fileName + "-" +self.seg_type + "Marker.png"
-                cv2.imwrite(binaryPath, self.edges_list[i])
-                plt.imsave(markerPath, self.regions_list[i])
+                file_and_extension = words[len(words) - 1]
+                file_and_extension_list = file_and_extension.split('.')
+                file_name = file_and_extension_list[0]
+                extension_name = file_and_extension_list[1]
+                binary_path = img_folder + '\\' + file_name + "-" + self.seg_type + "Binary." + extension_name
+                marker_path = img_folder + '\\' + file_name + "-" + self.seg_type + "Marker.png"
+                cv2.imwrite(binary_path, self.edges_list[i])
+                plt.imsave(marker_path, self.regions_list[i])
 
     def evaluation(self):
         self.table_ev_results.setRowCount(0)
@@ -350,8 +464,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
         evaluation_results = []
         length = len(evaluation_paths)
         row = 0
-        #ev = evaluation.Evaluation(evaluation_paths, algorithms)
-        #for current_results in ev.getResults():
+        # ev = evaluation.Evaluation(evaluation_paths, algorithms)
+        # for current_results in ev.getResults():
         for paths in evaluation_paths:
             paths_nested = []
             paths_nested.append(paths)
@@ -381,31 +495,33 @@ class MainClass(Ui_MainWindow, QMainWindow):
             item = QTableWidgetItem(self.getShortFilePath(current_results["true path"]))
             item.setIcon(true_icon)
             self.table_ev_results.setItem(row, 1, item)
-            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(round(current_results["jaccarda index weighted"], 4))))
+            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(round(current_results["jaccarda index weighted"],
+                                                                             4))))
             self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(round(current_results["f1 score weighted"], 4))))
-            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(round(current_results["explained variance score"], 4))))
-            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(round(current_results["mean squared error"], 4))))
+            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(round(current_results["explained variance score"]
+                                                                             , 4))))
+            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(round(current_results["mean squared error"],
+                                                                             4))))
             self.table_ev_results.resizeRowsToContents()
             row += 1
-            # item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
-            # ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
-            #                        ["explained variance score"], evaluation_results[0]["mean squared error"])
-            # # item.setIcon(icon)
-            # self.list_ev_results.addItem(item)
+            # item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"],
+            # evaluation_results[0] ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"],
+            # evaluation_results[0] ["explained variance score"], evaluation_results[0]["mean squared error"]) #
+            # item.setIcon(icon) self.list_ev_results.addItem(item)
 
             evaluation_results.append(current_results)
             # Update progress bar
-            self.completed += (int)(100 / length)
+            self.completed += int(100 / length)
             self.progressBar_evaluation.setValue(self.completed)
         self.progressBar_evaluation.setValue(100)
-        # TODO diplaying results
+        # TODO displaying results
 
-    def filterPredictedPathsForEvaluation(self, paths, keyString):
-        filtered_paths = [path for path in paths if keyString in path]
+    def filterPredictedPathsForEvaluation(self, paths, key_string):
+        filtered_paths = [path for path in paths if key_string in path]
         return filtered_paths
 
     def connectPaths(self, predicted, true):
-        connectedPaths = []
+        connected_paths = []
         for pred_path in predicted:
             file_name = self.getFileNameFromFilePath(pred_path)
             image_name = self.getImageNameFromFileName(file_name)
@@ -414,8 +530,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
             if true_path == "":
                 None
             # TODO
-            connectedPaths.append([true_path, pred_path])
-        return connectedPaths
+            connected_paths.append([true_path, pred_path])
+        return connected_paths
 
     def getFileNameFromFilePath(self, filePath):
         words = filePath.split('\\')

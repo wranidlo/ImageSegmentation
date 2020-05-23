@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
-    <height>531</height>
+    <width>875</width>
+    <height>561</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -61,7 +61,7 @@
              <string/>
             </property>
             <property name="placeholderText">
-             <string>example.jpg</string>
+             <string>folder\example</string>
             </property>
            </widget>
           </item>
@@ -150,6 +150,12 @@
           </item>
           <item row="4" column="1">
            <widget class="QListView" name="list_of_images">
+            <property name="minimumSize">
+             <size>
+              <width>500</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="viewMode">
              <enum>QListView::ListMode</enum>
             </property>
@@ -195,6 +201,140 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Odszumianie</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="1">
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Odszumine obrazy</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListWidget" name="list_widget_filter"/>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Wybierz typ algorytmu</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_button_median">
+            <property name="text">
+             <string>Median</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_button_gaussian">
+            <property name="text">
+             <string>Gaussian</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_button_bilateral">
+            <property name="text">
+             <string>Bilateral</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="push_button_filter">
+            <property name="text">
+             <string>Odszum</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progress_bar_filter">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Zapisz wyniki</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="line_edit_filter">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="placeholderText">
+             <string>folder\example</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="push_button_save_filter">
+            <property name="text">
+             <string>Zapisz wyniki</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tab2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -217,6 +357,33 @@
           <property name="sizeConstraint">
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
+          <item row="0" column="1">
+           <layout class="QGridLayout" name="gridLayout_11">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_group_a">
+              <property name="text">
+               <string>Grupa pierwsza</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_group_b">
+              <property name="text">
+               <string>Grupa druga</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QListWidget" name="list_widget_a"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QListWidget" name="list_widget_b"/>
+            </item>
+           </layout>
+          </item>
           <item row="0" column="0">
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
@@ -255,6 +422,12 @@
             </item>
             <item>
              <widget class="QProgressBar" name="progress_bar_groups">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="value">
                <number>0</number>
               </property>
@@ -294,49 +467,6 @@
              </widget>
             </item>
            </layout>
-          </item>
-          <item row="0" column="2">
-           <layout class="QGridLayout" name="gridLayout_11">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_group_a">
-              <property name="text">
-               <string>Grupa pierwsza</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_group_b">
-              <property name="text">
-               <string>Grupa druga</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QListWidget" name="list_widget_a"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="QListWidget" name="list_widget_b"/>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::MinimumExpanding</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </item>
@@ -418,10 +548,10 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QListWidget" name="list_edges"/>
+           <widget class="QListWidget" name="list_widget_edges"/>
           </item>
           <item row="1" column="1">
-           <widget class="QListWidget" name="list_regions"/>
+           <widget class="QListWidget" name="list_widget_regions"/>
           </item>
          </layout>
         </item>
