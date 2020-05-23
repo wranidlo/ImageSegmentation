@@ -823,7 +823,7 @@
           <item>
            <widget class="QCheckBox" name="check_ev_alg_evs">
             <property name="text">
-             <string>Explained Varince Score</string>
+             <string>Explained Variance Score</string>
             </property>
            </widget>
           </item>
