@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 class watershedSegmentation:
 	def __init__(self, img_path, res_folder_path="results"):
 		self.originalPath = img_path
-		self.resultsFolderPath = res_folder_path + "/"
+		self.resultsFolderPath = res_folder_path + "\\"
 		self.originalImage = self.loadImage()
 		self.grayscaleImage, self.thresholdValue, self.thresholdedImage = self.thresholdImage()
 		self.kernel, self.opening = self.noiseRemoval()

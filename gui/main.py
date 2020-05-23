@@ -89,7 +89,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                  QtGui.QImage.Format_RGB888).rgbSwapped()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            item = QtGui.QStandardItem(img_path)
+            item = QtGui.QStandardItem(self.getShortFilePath(img_path))
             item.setIcon(icon)
             self.model_list_of_images.appendRow(item)
         else:
@@ -116,7 +116,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QtGui.QStandardItem(f)
+                item = QtGui.QStandardItem(self.getShortFilePath(f))
                 item.setIcon(icon)
                 self.model_list_of_images.appendRow(item)
                 self.completed += (int)(100 / length)
@@ -150,7 +150,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                          QtGui.QImage.Format_RGB888)
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                    item = QListWidgetItem(e)
+                    item = QListWidgetItem(self.getShortFilePath(e))
                     item.setIcon(icon)
 
                     self.list_widget_a.addItem(item)
@@ -163,7 +163,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                          QtGui.QImage.Format_RGB888).rgbSwapped()
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                    item = QListWidgetItem(e)
+                    item = QListWidgetItem(self.getShortFilePath(e))
                     item.setIcon(icon)
 
                     self.list_widget_b.addItem(item)
@@ -183,7 +183,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                          QtGui.QImage.Format_RGB888)
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                    item = QListWidgetItem(e)
+                    item = QListWidgetItem(self.getShortFilePath(e))
                     item.setIcon(icon)
 
                     self.list_widget_a.addItem(item)
@@ -196,7 +196,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                          QtGui.QImage.Format_RGB888).rgbSwapped()
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                    item = QListWidgetItem(e)
+                    item = QListWidgetItem(self.getShortFilePath(e))
                     item.setIcon(icon)
 
                     self.list_widget_b.addItem(item)
@@ -236,7 +236,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_edges.addItem(item)
                 self.edges_list.append(edges)
@@ -245,7 +245,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_regions.addItem(item)
                 self.regions_list.append(regions)
@@ -257,15 +257,14 @@ class MainClass(Ui_MainWindow, QMainWindow):
             self.seg_type = "Watershed"
             for e in self.list_to_segment:
                 segmentation = watershedSegmentation.watershedSegmentation(e)
-
                 edges, regions = segmentation.getResults()
-                plt.imsave('images/temp.png', regions)
+                plt.imsave('images/temp.png', regions) # TODO here crash
                 regions = cv2.imread('images/temp.png')
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_edges.addItem(item)
                 self.edges_list.append(edges)
@@ -273,7 +272,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_regions.addItem(item)
                 self.regions_list.append(regions)
@@ -290,7 +289,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_edges.addItem(item)
                 self.edges_list.append(edges)
@@ -298,7 +297,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                                      QtGui.QImage.Format_RGB888).rgbSwapped()
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                item = QListWidgetItem(e)
+                item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_regions.addItem(item)
                 self.regions_list.append(regions)
@@ -332,7 +331,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
     def evaluation(self):
         self.table_ev_results.setRowCount(0)
         self.completed = 0
-        self.progressBar_evaluation.setValue(0)
         algorithms = [0, 0, 0, 0]
         if self.check_ev_alg_jaccarda.isChecked():
             algorithms[0] = 1
@@ -343,57 +341,51 @@ class MainClass(Ui_MainWindow, QMainWindow):
         if self.check_ev_alg_mse.isChecked():
             algorithms[3] = 1
         ground_true_folder = self.line_ev_true_folder.text()
-        ground_true_folder += "/*.bmp"
-        true_segmentation_paths = mainTemp.loadImagesPathsInFolder(ground_true_folder)
+        true_segmentation_paths = self.loadImagesPathsInFolder(ground_true_folder, [".bmp"])
         predicted_folder = self.line_ev_pred_folder.text()
-        predicted_folder += "/*.jpg"
-        predicted_segmentation_paths = mainTemp.loadImagesPathsInFolder(predicted_folder)
+        predicted_segmentation_paths = self.loadImagesPathsInFolder(predicted_folder, [".jpg", ".png", ".bmp"])
         predicted_segmentation_paths = self.filterPredictedPathsForEvaluation(predicted_segmentation_paths, 'Binary')
         evaluation_paths = self.connectPaths(predicted_segmentation_paths, true_segmentation_paths)
+        self.progressBar_evaluation.setValue(0)
         evaluation_results = []
         length = len(evaluation_paths)
         row = 0
-        ev = evaluation.Evaluation(evaluation_paths, algorithms)
-        for current_results in ev.getResults():
-            print(ev)
-            # TODO fix displaying many elements in list row or maybe change on QTable
+        #ev = evaluation.Evaluation(evaluation_paths, algorithms)
+        #for current_results in ev.getResults():
+        for paths in evaluation_paths:
+            paths_nested = []
+            paths_nested.append(paths)
+            ev = evaluation.Evaluation(paths_nested, algorithms)
             # Evaluation
-            evaluation_results.append(current_results)
-            print("evaluation results: ", evaluation_results)
+            current_results = ev.getResults()
+            # print("evaluation results: ", evaluation_results)
             # Displaying result
-            print(current_results)
-            print("pred path: ", current_results["predicted path"])
-            print("true path: ", current_results["true path"])
+            current_results = current_results[0]
             pred_img = cv2.imread(current_results["predicted path"])
             true_img = cv2.imread(current_results["true path"])
-            print("images loaded")
             pred_img = cv2.resize(pred_img, (50, 50))
             true_img = cv2.resize(true_img, (50, 50))
-            print("images resized")
             pred_img = QtGui.QImage(pred_img.data, pred_img.shape[1], pred_img.shape[0], 3 * pred_img.shape[1],
                                     QtGui.QImage.Format_RGB888)
             true_img = QtGui.QImage(true_img.data, true_img.shape[1], true_img.shape[0], 3 * true_img.shape[1],
                                     QtGui.QImage.Format_RGB888)
-            print("images changed into QImage")
             pred_icon = QtGui.QIcon()
             true_icon = QtGui.QIcon()
             pred_icon.addPixmap(QtGui.QPixmap.fromImage(pred_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             true_icon.addPixmap(QtGui.QPixmap.fromImage(true_img), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            print("images changed into icons")
             # rowPosition = self.table_ev_results.rowCount()
             self.table_ev_results.setRowCount(length)
-            item = QTableWidgetItem(current_results["predicted path"])
+            item = QTableWidgetItem(self.getShortFilePath(current_results["predicted path"]))
             item.setIcon(pred_icon)
             self.table_ev_results.setItem(row, 0, item)
-            item = QTableWidgetItem(current_results["true path"])
+            item = QTableWidgetItem(self.getShortFilePath(current_results["true path"]))
             item.setIcon(true_icon)
             self.table_ev_results.setItem(row, 1, item)
-            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(current_results["jaccarda index weighted"])))
-            self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(current_results["f1 score weighted"])))
-            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(current_results["explained variance score"])))
-            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(current_results["mean squared error"])))
+            self.table_ev_results.setItem(row, 2, QTableWidgetItem(str(round(current_results["jaccarda index weighted"], 4))))
+            self.table_ev_results.setItem(row, 3, QTableWidgetItem(str(round(current_results["f1 score weighted"], 4))))
+            self.table_ev_results.setItem(row, 4, QTableWidgetItem(str(round(current_results["explained variance score"], 4))))
+            self.table_ev_results.setItem(row, 5, QTableWidgetItem(str(round(current_results["mean squared error"], 4))))
             self.table_ev_results.resizeRowsToContents()
-            print("testDisplay")
             row += 1
             # item = QListWidgetItem(pred_icon, true_icon, evaluation_results[0]["predicted path"], evaluation_results[0]
             # ["jaccarda index weighted"], evaluation_results[0]["f1 score weighted"], evaluation_results[0]
@@ -401,6 +393,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
             # # item.setIcon(icon)
             # self.list_ev_results.addItem(item)
 
+            evaluation_results.append(current_results)
             # Update progress bar
             self.completed += (int)(100 / length)
             self.progressBar_evaluation.setValue(self.completed)
@@ -422,11 +415,10 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 None
             # TODO
             connectedPaths.append([true_path, pred_path])
-        print("evaluation paths: ", connectedPaths)
         return connectedPaths
 
     def getFileNameFromFilePath(self, filePath):
-        words = filePath.split('/')
+        words = filePath.split('\\')
         fileAndExtension = words[len(words) - 1]
         fileAndExtensionList = fileAndExtension.split('.')
         fileName = fileAndExtensionList[0]
@@ -445,6 +437,26 @@ class MainClass(Ui_MainWindow, QMainWindow):
             if foundName == imageName:
                 return path
         return ""
+
+    def getShortFilePath(self, path):
+        hierarchy = path.split('\\')
+        length = len(hierarchy)
+        if length < 3:
+            return path
+        else:
+            short_path = hierarchy[length-3] + "\\" + hierarchy[length-2] + "\\" + hierarchy[length-1]
+            return short_path
+
+    def loadImagesPathsInFolder(self, path, valid_images):
+        path_list = []
+        # TODO exception
+        if os.path.exists(path):
+            for f in os.listdir(path):
+                ext = os.path.splitext(f)[1]
+                if ext.lower() in valid_images:
+                    f = os.path.join(path, f)
+                    path_list.append(f)
+        return path_list
 
 
 def main():

@@ -639,7 +639,7 @@
           <item>
            <widget class="QLineEdit" name="line_ev_pred_folder">
             <property name="text">
-             <string>D:/GitHub/ImageSegmentation/results</string>
+             <string>D:\GitHub\ImageSegmentation\results</string>
             </property>
            </widget>
           </item>
@@ -772,7 +772,7 @@
           <item>
            <widget class="QLineEdit" name="line_ev_true_folder">
             <property name="text">
-             <string>D:/GitHub/ImageSegmentation/ground truth/gray/human</string>
+             <string>D:\GitHub\ImageSegmentation\ground truth\gray\human</string>
             </property>
            </widget>
           </item>
