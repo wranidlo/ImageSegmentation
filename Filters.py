@@ -2,10 +2,15 @@ import cv2
 import numpy as np
 import scipy.stats as st
 import math
+'''funkcje z dużej litery to właściwe filtry, reszta to funkcje pomocnicze'''
+'''każdy filtr zwraca odszumioną kopię obrazu podanego jako argument'''
+
+
 
 
 '''median filter'''
-def median_filter(image, filter_size):
+'''argumentu: obraz i rozmiar filtru (najlepiej 3 lub 5)'''
+def Median_filter(image, filter_size):
     if len(image.shape) == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     kernel = []
@@ -58,7 +63,8 @@ def convolution(oldimage, kernel):
     if (w == 0):
         return image_conv[h:h_end, w:]
     return image_conv[h:h_end, w:w_end]
-def GaussianBlurImage(image, filter_size,):
+'''argumentu: obraz i rozmiar filtru (najlepiej 3 lub 5)'''
+def GaussianBlurImage(image, filter_size):
     if len(image.shape) == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     sigma = 1
@@ -98,7 +104,10 @@ def apply_bilateral_filter(source, filtered_image, x, y, diameter, sigma_i, sigm
         i += 1
     i_filtered = i_filtered / Wp
     filtered_image[x][y] = int(round(i_filtered))
-def bilateral_filter_own(source, filter_diameter, sigma_i, sigma_s):
+'''UWAGA - POWOLNY'''
+'''argumenty: obraz, wartości sigm np: 30 i 30, a rozmiar filtru jest ustawiony na 3 bo przy większych rozmiarach filtrował przez pół wieczności'''
+def Bilateral_filter_own(source, sigma_i, sigma_s):
+    filter_diameter = 3
     if len(source.shape) == 3:
         source = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
     filtered_image = np.zeros(source.shape)
@@ -109,5 +118,6 @@ def bilateral_filter_own(source, filter_diameter, sigma_i, sigma_s):
             apply_bilateral_filter(source, filtered_image, i, j, filter_diameter, sigma_i, sigma_s)
             j += 1
         i += 1
-    return filtered_image
+    target= np.asarray(filtered_image, dtype=np.uint8)
+    return target
 
