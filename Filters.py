@@ -106,7 +106,7 @@ def apply_bilateral_filter(source, filtered_image, x, y, diameter, sigma_i, sigm
     filtered_image[x][y] = int(round(i_filtered))
 '''UWAGA - POWOLNY'''
 '''argumenty: obraz, wartości sigm np: 30 i 30, a rozmiar filtru jest ustawiony na 3 bo przy większych rozmiarach filtrował przez pół wieczności'''
-def Bilateral_filter_own(source, sigma_i, sigma_s):
+def Bilateral_filter(source, sigma_i, sigma_s):
     filter_diameter = 3
     if len(source.shape) == 3:
         source = cv2.cvtColor(source, cv2.COLOR_BGR2GRAY)
