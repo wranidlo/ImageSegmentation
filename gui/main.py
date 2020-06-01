@@ -7,16 +7,16 @@ import cv2
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QButtonGroup, QListWidgetItem, QTableWidgetItem, \
     QHeaderView
+from matplotlib import pyplot as plt
 
-from group_images import testBlurrLaplacianVariance, testEdgesKMeans
-from gui.designer import Ui_MainWindow
+import Filters
+import Noise
+import RegionSegmentation
 import edgeBasedSegmentation
 import evaluation
 import watershedSegmentation
-import RegionSegmentation
-import Filters
-
-from matplotlib import pyplot as plt
+from group_images import testBlurrLaplacianVariance, testEdgesKMeans
+from gui.designer import Ui_MainWindow
 
 sys.path.append('../')
 
@@ -48,6 +48,9 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.bg_filter.addButton(self.radio_button_bilateral, 1)
         self.bg_filter.addButton(self.radio_button_gaussian, 2)
         self.bg_filter.addButton(self.radio_button_median, 3)
+        self.bg_filter.addButton(self.radio_noisegauss, 4)
+        self.bg_filter.addButton(self.radio_saltpeper, 5)
+        self.bg_filter.addButton(self.radio_speckle, 6)
         self.list_widget_filter.setIconSize(QtCore.QSize(150, 150))
         self.push_button_filter.clicked.connect(self.run_filter)
         self.push_button_save_filter.clicked.connect(self.save_filter)
@@ -194,6 +197,60 @@ class MainClass(Ui_MainWindow, QMainWindow):
             for e in self.images_list:
                 img = cv2.imread(e)
                 img = Filters.Bilateral_filter(img, 30, 30)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+        if self.radio_speckle.isChecked():
+            self.filter_type = "SpeckleNoise"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Noise.noise_Speckle(img)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+        if self.radio_noisegauss.isChecked():
+            self.filter_type = "GaussianNoise"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Noise.noise_Gaussian(img)
+                self.filtered_images.append(img)
+                img = cv2.resize(img, (150, 150))
+                image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                item = QListWidgetItem(self.getShortFilePath(e))
+                item.setIcon(icon)
+
+                self.list_widget_filter.addItem(item)
+                self.completed += int(100 / length)
+                self.progress_bar_filter.setValue(self.completed)
+            self.progress_bar_filter.setValue(100)
+        if self.radio_saltpeper.isChecked():
+            self.filter_type = "SaltPeperNoise"
+            for e in self.images_list:
+                img = cv2.imread(e)
+                img = Noise.noise_SaltPepper(img)
                 self.filtered_images.append(img)
                 img = cv2.resize(img, (150, 150))
                 image = QtGui.QImage(img.data, img.shape[1], img.shape[0], img.shape[1],

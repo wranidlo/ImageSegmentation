@@ -203,7 +203,7 @@
       </widget>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Odszumianie</string>
+        <string>Szum</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="1">
@@ -211,7 +211,7 @@
           <item>
            <widget class="QLabel" name="label_12">
             <property name="text">
-             <string>Odszumine obrazy</string>
+             <string>Przetworzone obrazy</string>
             </property>
            </widget>
           </item>
@@ -231,7 +231,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Wybierz typ algorytmu</string>
+             <string>Wybierz typ algorytmu odszumiania</string>
             </property>
            </widget>
           </item>
@@ -257,9 +257,43 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="label_14">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Wybierz typ algorytmu zaszumiania</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_saltpeper">
+            <property name="text">
+             <string>SaltPeper</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_noisegauss">
+            <property name="text">
+             <string>Gaussian</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radio_speckle">
+            <property name="text">
+             <string>Speckle</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="push_button_filter">
             <property name="text">
-             <string>Odszum</string>
+             <string>Odszumianie/Zaszumanie</string>
             </property>
            </widget>
           </item>
