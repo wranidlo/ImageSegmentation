@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
-    <height>561</height>
+    <width>859</width>
+    <height>586</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -688,7 +688,184 @@
         <string>Ewaluacja</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="3" column="0" colspan="4">
+        <item row="0" column="2">
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_ev_pred_folder">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Folder z otrzymaną segmentacją       </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="line_ev_pred_folder">
+                <property name="text">
+                 <string>D:\GitHub\ImageSegmentation\results</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="QLabel" name="label_ev_true_folder">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Folder z prawdziwą segmentacją      </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="line_ev_true_folder">
+                <property name="text">
+                 <string>D:\GitHub\ImageSegmentation\ground truth\gray\human</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Grupa</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="combo_groups"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Algorytm odszumiania</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="combo_filter"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <item>
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>Algorytm zaszumiania</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="combo_noise"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_15">
+              <item>
+               <widget class="QLabel" name="label_19">
+                <property name="text">
+                 <string>Segmentacja</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="combo_seg"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="label_ev_algorithms">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Wybierz algorytm</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="check_ev_alg_jaccarda">
+            <property name="text">
+             <string>Jaccarda Index</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="check_ev_alg_f1_score">
+            <property name="text">
+             <string>F1 Score</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="check_ev_alg_evs">
+            <property name="text">
+             <string>Explained Variance Score</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="check_ev_alg_mse">
+            <property name="text">
+             <string>Mean Squared Error</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Preferred</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0" colspan="5">
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
            <widget class="QLabel" name="label_ev_results">
@@ -778,176 +955,23 @@
           </item>
          </layout>
         </item>
-        <item row="2" column="2" colspan="2">
-         <widget class="QProgressBar" name="progressBar_evaluation">
-          <property name="value">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="2">
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item row="1" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QLabel" name="label_ev_pred_folder">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
+           <widget class="QPushButton" name="pushButton_evaluation">
             <property name="text">
-             <string>Folder z otrzymaną segmentacją       </string>
+             <string>Ewaluacja</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="line_ev_pred_folder">
-            <property name="text">
-             <string>D:\GitHub\ImageSegmentation\results</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Preferred</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="0" rowspan="3">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QLabel" name="label_ev_algorithms">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Wybierz algorytm</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="check_ev_alg_jaccarda">
-            <property name="text">
-             <string>Jaccarda Index</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="check_ev_alg_f1_score">
-            <property name="text">
-             <string>F1 Score</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="check_ev_alg_evs">
-            <property name="text">
-             <string>Explained Variance Score</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="check_ev_alg_mse">
-            <property name="text">
-             <string>Mean Squared Error</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Preferred</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="3" rowspan="2">
-         <widget class="QTableWidget" name="tableWidget">
-          <property name="columnCount">
-           <number>3</number>
-          </property>
-          <row>
-           <property name="text">
-            <string>Grupa 1</string>
-           </property>
-          </row>
-          <row>
-           <property name="text">
-            <string>Grupa 2</string>
-           </property>
-          </row>
-          <column>
-           <property name="text">
-            <string>Seg 1</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Seg 2</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Seg 3</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <widget class="QLabel" name="label_ev_true_folder">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Folder z prawdziwą segmentacją      </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="line_ev_true_folder">
-            <property name="text">
-             <string>D:\GitHub\ImageSegmentation\ground truth\gray\human</string>
+           <widget class="QProgressBar" name="progressBar_evaluation">
+            <property name="value">
+             <number>0</number>
             </property>
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="pushButton_evaluation">
-          <property name="text">
-           <string>Ewaluacja</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>

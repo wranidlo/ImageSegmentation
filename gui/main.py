@@ -96,6 +96,21 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.table_ev_results.setIconSize(QtCore.QSize(100, 100))
         self.table_ev_results.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table_ev_results.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.combo_groups.addItem("Edges-Good")
+        self.combo_groups.addItem("Edges-Bad")
+        self.combo_groups.addItem("Blurr")
+        self.combo_groups.addItem("Not-Blur")
+        self.combo_groups.addItem("All")
+        self.combo_filter.addItem("Gaussian")
+        self.combo_filter.addItem("Bilateral")
+        self.combo_filter.addItem("Median")
+        self.combo_noise.addItem("Gaussian")
+        self.combo_noise.addItem("Salt-Peper")
+        self.combo_noise.addItem("Speckle")
+        self.combo_seg.addItem("EdgesBased")
+        self.combo_seg.addItem("RegionBased")
+        self.combo_seg.addItem("Watershed")
+
 
     def add_one_image(self):
         img_path = self.one_image_text.text()
