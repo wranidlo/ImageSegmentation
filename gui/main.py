@@ -2,6 +2,7 @@ import os
 import os.path
 import os.path
 import sys
+import csv
 
 import cv2
 from PyQt5 import QtGui, QtCore
@@ -29,6 +30,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.images_group_a = []  # list of images (group a) exists only if images where divided
         self.images_group_b = []  # list of images (group b) exists only if images where divided
         self.list_to_segment = []   # list of images names to segment
+        self.evaluation_results = [] # list od dicts returned by evaluation
         super(MainClass, self).__init__()
         self.setupUi(self)
 
@@ -93,6 +95,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
 
         #  5 tab
         self.pushButton_evaluation.clicked.connect(self.evaluation)
+        self.pushButton_save_ev.clicked.connect(self.saveEvaluationResults)
         self.table_ev_results.setIconSize(QtCore.QSize(100, 100))
         self.table_ev_results.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table_ev_results.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
@@ -100,16 +103,19 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.combo_groups.addItem("Edges-Bad")
         self.combo_groups.addItem("Blurr")
         self.combo_groups.addItem("Not-Blur")
-        self.combo_groups.addItem("All")
+        self.combo_groups.addItem("Without group")
         self.combo_filter.addItem("Gaussian")
         self.combo_filter.addItem("Bilateral")
         self.combo_filter.addItem("Median")
+        self.combo_filter.addItem("Without filter")
         self.combo_noise.addItem("Gaussian")
         self.combo_noise.addItem("Salt-Peper")
         self.combo_noise.addItem("Speckle")
+        self.combo_noise.addItem("Without noise")
         self.combo_seg.addItem("EdgesBased")
         self.combo_seg.addItem("RegionBased")
         self.combo_seg.addItem("Watershed")
+        self.combo_seg.addItem("Without segmentation")
 
 
     def add_one_image(self):
@@ -533,7 +539,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
         predicted_segmentation_paths = self.filterPredictedPathsForEvaluation(predicted_segmentation_paths, 'Binary')
         evaluation_paths = self.connectPaths(predicted_segmentation_paths, true_segmentation_paths)
         self.progressBar_evaluation.setValue(0)
-        evaluation_results = []
+        self.evaluation_results = []
         length = len(evaluation_paths)
         row = 0
         # ev = evaluation.Evaluation(evaluation_paths, algorithms)
@@ -581,12 +587,86 @@ class MainClass(Ui_MainWindow, QMainWindow):
             # evaluation_results[0] ["explained variance score"], evaluation_results[0]["mean squared error"]) #
             # item.setIcon(icon) self.list_ev_results.addItem(item)
 
-            evaluation_results.append(current_results)
+            self.evaluation_results.append(current_results)
             # Update progress bar
             self.completed += int(100 / length)
             self.progressBar_evaluation.setValue(self.completed)
         self.progressBar_evaluation.setValue(100)
         # TODO displaying results
+
+    def saveEvaluationResults(self):
+        self.progressBar_evaluation.setValue(0)
+        group = self.combo_groups.currentIndex()
+        clear = self.combo_filter.currentIndex()
+        noise = self.combo_noise.currentIndex()
+        segmentation = self.combo_seg.currentIndex()
+        path = self.lineEdit_save_ev.text()
+        if group == 4:
+            path += "-AllImages"
+        elif group == 0:
+            path += "-EdgesGood"
+        elif group == 1:
+            path += "-EdgesBad"
+        elif group == 2:
+            path += "-Blurr"
+        elif group == 3:
+            path += "-NotBlurr"
+        if noise == 3:
+            path += "-NoNoise"
+        elif noise == 0:
+            path += "-Gaussian"
+        elif noise == 1:
+            path += "-SaltPeper"
+        elif noise == 2:
+            path += "-Speckle"
+        if clear == 3:
+            path += "-NoClear"
+        elif clear == 0:
+            path += "-Gaussian"
+        elif clear == 1:
+            path += "-Bilateral"
+        elif clear == 2:
+            path += "-Median"
+        if segmentation == 3:
+            path += "-NoSegmentation"
+        elif segmentation == 0:
+            path += "-EdgesBased"
+        elif segmentation == 1:
+            path += "-RegionBased"
+        elif segmentation == 2:
+            path += "-Watershed"
+        path += '.csv'
+        clearedResults = self.evaluation_results
+        length = len(clearedResults)
+        with open(path, mode='w') as result_file:
+            fieldnames = ['image name', 'jaccarda index weighted', 'f1 score weighted', 'explained variance score',
+                          'mean squared error']
+            writer = csv.DictWriter(result_file, fieldnames=fieldnames)
+            writer.writeheader()
+            for dict in clearedResults:
+                path = dict['true path']
+                name = self.getFileNameFromFilePath(path)
+                dict['image name'] = name
+                del dict['predicted image']
+                del dict['predicted path']
+                del dict['true image']
+                del dict['true path']
+                del dict['jaccarda index micro']
+                del dict['jaccarda index macro']
+                del dict['f1 score micro']
+                del dict['f1 score macro']
+                writer.writerow(dict)
+                # Update progress bar
+                self.completed += int(100 / length)
+                self.progressBar_evaluation.setValue(self.completed)
+        self.progressBar_evaluation.setValue(100)
+        # with open(path, mode='w') as result_file:
+        #     fieldnames = ['image name', 'jaccarda index weighted', 'f1 score weighted', 'explained variance score',
+        #                   'mean squared error']
+        #     writer = csv.DictWriter(result_file, fieldnames=fieldnames)
+        #     writer.writeheader()
+        #     for dict in clearedResults:
+        #         writer.writerow(dict)
 
     def filterPredictedPathsForEvaluation(self, paths, key_string):
         filtered_paths = [path for path in paths if key_string in path]
