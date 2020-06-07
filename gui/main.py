@@ -296,6 +296,11 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 file_name = file_and_extension_list[0]
                 new_path = img_folder + '\\' + file_name + "-" + self.filter_type + "Filter.png"
                 cv2.imwrite(new_path, self.filtered_images[i])
+            self.label_save_filters.setText("Zapisano")
+            self.label_save_filters.setStyleSheet('color: green')
+        else:
+            self.label_save_filters.setText("Nie znaleziono folderu")
+            self.label_save_filters.setStyleSheet('color: red')
 
     def show_clicked_filter(self):
         row = self.list_widget_filter.currentRow()
@@ -312,6 +317,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.list_widget_b.clear()
         length = len(self.images_list)
         if self.check_box_blurr.isChecked():
+            self.label_group_a.setText("Obrazy nie rozmyte")
+            self.label_group_b.setText("Obrazy rozmyte")
             for e in self.images_list:
                 if testBlurrLaplacianVariance.test_if_not_blurred(e):
                     self.images_group_a.append(e)
@@ -343,6 +350,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 self.progress_bar_groups.setValue(self.completed)
             self.progress_bar_groups.setValue(100)
         if self.check_box_edge.isChecked():
+            self.label_group_a.setText("Obrazy z dużą liczbą krawędzi")
+            self.label_group_b.setText("Obrazy z małą liczbą krawędzi")
             model = testEdgesKMeans.read_model()
             for e in self.images_list:
                 img = cv2.imread(e)
@@ -377,6 +386,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
             self.progress_bar_groups.setValue(100)
 
     def clear_divide(self):
+        self.label_group_a.setText("Grupa pierwsza")
+        self.label_group_b.setText("Grupa druga")
         self.images_divided = False
         self.progress_bar_groups.setValue(0)
         self.images_group_a.clear()
@@ -494,7 +505,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.edges_list.clear()
         self.regions_list.clear()
         self.progress_bar_seg.setValue(0)
-        self.list_to_segment.clear()
 
     def show_clicked_edges(self):
         row = self.list_widget_edges.currentRow()
@@ -519,6 +529,12 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 marker_path = img_folder + '\\' + file_name + "-" + self.seg_type + "Marker.png"
                 cv2.imwrite(binary_path, self.edges_list[i])
                 plt.imsave(marker_path, self.regions_list[i])
+            self.label_save_seg.setText("Zapisano")
+            self.label_save_seg.setStyleSheet('color: green')
+        else:
+            self.label_save_seg.setText("Nie znaleziono folderu")
+            self.label_save_seg.setStyleSheet('color: red')
+
 
     def evaluation(self):
         self.table_ev_results.setRowCount(0)
