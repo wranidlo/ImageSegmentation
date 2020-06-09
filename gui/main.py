@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 import Filters
 import Noise
-import RegionSegmentation
+import RegionSegmentation, Region
 import edgeBasedSegmentation
 import evaluation
 import watershedSegmentation
@@ -424,7 +424,6 @@ class MainClass(Ui_MainWindow, QMainWindow):
             self.seg_type = "Edge"
             for e in self.list_to_segment:
                 edges, regions = edgeBasedSegmentation.segment_image(e)
-
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
@@ -477,7 +476,9 @@ class MainClass(Ui_MainWindow, QMainWindow):
             self.seg_type = "Region"
             for e in self.list_to_segment:
                 image = cv2.imread(e, 1)
-                regions, edges = RegionSegmentation.auto_region_growing(image)
+                print(1)
+                regions, edges = Region.auto_region_growing(image)
+                print(2)
                 image = QtGui.QImage(edges.data, edges.shape[1], edges.shape[0], edges.shape[1],
                                      QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
@@ -486,13 +487,16 @@ class MainClass(Ui_MainWindow, QMainWindow):
                 item.setIcon(icon)
                 self.list_widget_edges.addItem(item)
                 self.edges_list.append(edges)
-                image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], 3 * regions.shape[1],
-                                     QtGui.QImage.Format_RGB888).rgbSwapped()
+                print(4)
+                image = QtGui.QImage(regions.data, regions.shape[1], regions.shape[0], regions.shape[1],
+                                     QtGui.QImage.Format_Grayscale8)
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                print(4)
                 item = QListWidgetItem(self.getShortFilePath(e))
                 item.setIcon(icon)
                 self.list_widget_regions.addItem(item)
+                print(3)
                 self.regions_list.append(regions)
 
                 self.completed += int(100 / length)
