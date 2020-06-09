@@ -1,6 +1,10 @@
 # ImageSegmentation
 The system functionality includes:  
 - loading images and folders to system, 
+- creating noise in images with use of 3 diffrent types of algorithms:  
+  + salt-peper,
+  + gaussian,  
+  + speckle, 
 - clearing images from noise with use of 3 diffrent types of algorithms:  
   + gaussian,
   + median,  
