@@ -99,8 +99,8 @@ class MainClass(Ui_MainWindow, QMainWindow):
         self.table_ev_results.setIconSize(QtCore.QSize(100, 100))
         self.table_ev_results.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table_ev_results.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.combo_groups.addItem("Edges-Good")
-        self.combo_groups.addItem("Edges-Bad")
+        self.combo_groups.addItem("Edges-Much")
+        self.combo_groups.addItem("Edges-Little")
         self.combo_groups.addItem("Blurr")
         self.combo_groups.addItem("Not-Blur")
         self.combo_groups.addItem("Without group")
@@ -619,9 +619,9 @@ class MainClass(Ui_MainWindow, QMainWindow):
         if group == 4:
             path += "-AllImages"
         elif group == 0:
-            path += "-EdgesGood"
+            path += "-EdgesMuch"
         elif group == 1:
-            path += "-EdgesBad"
+            path += "-EdgesLittle"
         elif group == 2:
             path += "-Blurr"
         elif group == 3:
