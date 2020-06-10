@@ -326,7 +326,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     img = cv2.imread(e)
                     img = cv2.resize(img, (50, 50))
                     image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
-                                         QtGui.QImage.Format_RGB888)
+                                         QtGui.QImage.Format_RGB888).rgbSwapped()
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                     item = QListWidgetItem(self.getShortFilePath(e))
@@ -361,7 +361,7 @@ class MainClass(Ui_MainWindow, QMainWindow):
                     img = cv2.imread(e)
                     img = cv2.resize(img, (50, 50))
                     image = QtGui.QImage(img.data, img.shape[1], img.shape[0], 3 * img.shape[1],
-                                         QtGui.QImage.Format_RGB888)
+                                         QtGui.QImage.Format_RGB888).rgbSwapped()
                     icon = QtGui.QIcon()
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                     item = QListWidgetItem(self.getShortFilePath(e))
