@@ -23,5 +23,7 @@ The system functionality includes:
   + mean squared error,  
   + explained variance score.  
   
-The system includes GUI.  
+The system includes GUI.
+
+## How to run
 Run by starting true_main.py.
